@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trail and Test</title>
+<!--chatgpt-->
+  <style>
+    /* --- Global Styles --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 2rem;
+    }
+
+    /* --- Reusable Node Styles --- */
+    .node {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    /* --- Circle Node --- */
+    .circle {
+      width: 60px;
+      height: 60px;
+      border: 4px solid #000;
+      border-radius: 50%;
+    }
+
+    /* --- Linked List Node --- */
+    .list-node {
+      display: flex;
+      border: 3px solid #000;
+      width: 80px;
+      height: 40px;
+    }
+
+    .list-node .data,
+    .list-node .link {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .list-node .data {
+      background-color: yellow;
+      border-right: 3px solid #000;
+    }
+
+    .list-node .link {
+      background-color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Circle Node -->
+  <div class="node circle">98</div>
+
+  <!-- Linked List Node -->
+  <div class="node list-node">
+    <div class="data">23</div>
+    <div class="link"></div>
+  </div>
+</body>
+</html>

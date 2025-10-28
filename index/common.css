@@ -1,0 +1,76 @@
+.ibutton{
+    width:200px;
+    height:50px;
+    border: 2px solid black;
+    margin:10px;
+    cursor:pointer;
+    font-size:20px;
+    color:white;
+    font-family: fantasy;
+    -webkit-text-stroke: 0.5px black;
+}
+.button.box{
+    padding:10px;
+    border:2px solid black;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    margin:10px;
+}
+
+.first{
+    background-color: rgb(252, 82, 110);
+}
+.ibutton:hover{
+    /*background-color:  rgb(253, 2, 119);*/
+    width:220px;
+    height:70px;
+}
+.second{
+    background-color: rgb(85, 231, 1);
+}
+
+.third{
+    background-color: #fff41b;
+}
+
+input{
+    height:40px;
+    width:100px;
+}
+
+
+
+/*trail.css*/
+div{
+display:flex;
+            /*display:inline-block;*/
+        }
+        .circle{
+            width :50px;
+            height: 50px;
+            border: 5px solid black;
+            border-radius:100%;
+        }
+        p{
+            margin:auto;
+            text-align: center;
+        }
+        .list_nodes{
+            margin:20px;
+            width:80px;
+            height:40px;
+            border: 3px solid black;
+           }
+        .data{
+            background-color: yellow;
+            width:40px;
+            height:40px;
+            border-right:3px solid black;
+            text-align:center;
+        }
+        .link{
+            background-color: red;
+            width:40px;
+            height:40px;
+        }
