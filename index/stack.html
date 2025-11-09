@@ -1,15 +1,121 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Stack</title>
-    <link href="common.css" rel="stylesheet">
-</head>
-<body>
-    <div class="button box">
-    <button class="stack ibutton first">Push</button>
-    <button class="stack ibutton second">Pop</button>
-    <button class="stack ibutton third">Peek</button>
-    </div>
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Stack Visualizer</title>
+		<!-- React + ReactDOM UMD builds -->
+		<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+		<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+		<!-- Babel for JSX in-browser (development/demo only) -->
+		<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+		<style>
+			:root{--bg:#0f172a;--card:#ffffff;--accent:#4f46e5}
+			html,body,#root{height:100%;}
+			body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; background:linear-gradient(135deg,#0f172a,#1f2937); color:#111827; display:flex; align-items:center; justify-content:center; min-height:100vh}
+			.container{background:var(--card);width:520px;max-width:94vw;padding:20px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.6);margin:auto}
+			h1{margin:0 0 12px 0;font-size:20px}
+			.controls{display:flex;gap:8px;margin-bottom:10px}
+			.controls input[type="text"]{flex:1;padding:8px;border-radius:6px;border:1px solid #e5e7eb}
+			.controls button{padding:8px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+			.controls button.secondary{background:#10b981}
+			.stack-box{border:1px dashed #e5e7eb;padding:12px;border-radius:8px;min-height:220px;max-height:300px;overflow:auto;display:flex;flex-direction:column-reverse;gap:8px;background:linear-gradient(180deg,#f8fafc,#fff)}
+			.node{padding:10px 12px;border-radius:6px;background:#111827;color:#fff;display:flex;align-items:center;position:relative;overflow:hidden}
+			.node.top{outline:2px solid #f59e0b}
+			.meta{margin-top:12px;color:#6b7280;font-size:13px}
+			.small-btn{padding:6px 8px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;cursor:pointer}
+			.row{display:flex;gap:8px;align-items:center}
+		</style>
+	</head>
+	<body>
+		<div id="root"></div>
+
+		<script type="text/babel">
+			const { useState, useRef } = React;
+
+			function StackVisualizer() {
+				const [stack, setStack] = useState([]);
+				const [value, setValue] = useState('');
+				const [capacity, setCapacity] = useState(10);
+				const [log, setLog] = useState('');
+				const inputRef = useRef(null);
+
+				function push() {
+					if (stack.length >= capacity) { setLog('Stack overflow — cannot push: capacity reached'); return; }
+					if (value === '') { setLog('Enter a value to push'); return; }
+					setStack(prev => [...prev, value]);
+					setLog(`Pushed: ${value}`);
+					setValue('');
+					inputRef.current && inputRef.current.focus();
+				}
+
+				function pop() {
+					if (stack.length === 0) { setLog('Stack underflow — nothing to pop'); return; }
+					const popped = stack[stack.length - 1];
+					setStack(prev => prev.slice(0, prev.length - 1));
+					setLog(`Popped: ${popped}`);
+				}
+
+				function peek() {
+					if (stack.length === 0) { setLog('Stack is empty'); return; }
+					setLog(`Top: ${stack[stack.length - 1]}`);
+				}
+
+				function printAll() {
+					setLog(stack.length ? `Stack (top->bottom): ${stack.slice().reverse().join(', ')}` : 'Stack is empty');
+				}
+
+				function clear() { setStack([]); setLog('Cleared stack'); }
+
+				return (
+					<div className="container" role="application" aria-label="Stack Visualizer">
+						<h1>Stack Visualizer</h1>
+
+						<div className="controls">
+							<input ref={inputRef} value={value} onChange={e => setValue(e.target.value)} placeholder="Value to push" aria-label="value-input" />
+							<button onClick={push}>Push</button>
+							<button className="secondary" onClick={pop}>Pop</button>
+						</div>
+
+						<div className="row" style={{marginBottom:8}}>
+							<label style={{fontSize:13,color:'#6b7280'}}>Capacity</label>
+							<input type="number" min="1" max="100" value={capacity} onChange={e => setCapacity(Math.max(1, Number(e.target.value || 10)))} style={{width:80,padding:6,borderRadius:6,border:'1px solid #e5e7eb'}} aria-label="capacity-input" />
+							<div style={{marginLeft:'auto',display:'flex',gap:8}}>
+								<button className="small-btn" onClick={peek}>Peek</button>
+								<button className="small-btn" onClick={printAll}>Print</button>
+								<button className="small-btn" onClick={clear}>Clear</button>
+							</div>
+						</div>
+
+						<div className="stack-box" aria-live="polite">
+							{stack.length === 0 ? (
+								<div style={{color:'#9ca3af',textAlign:'center',padding:20}}>Stack is empty</div>
+							) : (
+												stack.map((item, idx) => {
+													const isTop = idx === stack.length - 1;
+													// color map from bottom -> top (use idx to compute hue)
+													const hue = Math.round((idx * 40) % 360);
+													const bg = `hsl(${hue} 70% 45%)`;
+													const textColor = 'white';
+													return (
+														<div key={idx} className={"node" + (isTop ? ' top' : '')} style={{background: bg, color: textColor}}>
+															<div style={{flex:1, textAlign:'center', fontWeight:600}}>{item}</div>
+															{isTop && <small style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',fontSize:12,opacity:0.95}}>TOP</small>}
+														</div>
+													);
+												})
+							)}
+						</div>
+
+						<div className="meta">
+							<div>Size: {stack.length} / {capacity}</div>
+							<div style={{marginTop:8,color:'#374151'}}>Log: {log || '-'}</div>
+						</div>
+					</div>
+				);
+			}
+
+			ReactDOM.createRoot(document.getElementById('root')).render(<StackVisualizer />);
+		</script>
+	</body>
 </html>

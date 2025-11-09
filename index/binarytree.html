@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Binary Tree Visualizer (Left-to-Right)</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      :root{--bg:#0f172a;--card:#fff;--accent:#2563eb;--alt:#f59e0b}
+      html,body,#root{height:100%;}
+      body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; background:linear-gradient(135deg,#0f172a,#1f2937); color:#111827; display:flex; align-items:center; justify-content:center; min-height:100vh}
+      .container{background:var(--card);width:880px;max-width:96vw;padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.6);margin:auto}
+      h1{margin:0 0 12px 0;font-size:20px}
+      .controls{display:flex;gap:8px;margin-bottom:12px}
+      .controls input[type="text"]{padding:8px;border-radius:6px;border:1px solid #e5e7eb}
+      .controls button{padding:8px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+      .controls button.alt{background:var(--alt)}
+      .canvas{border:1px dashed #e5e7eb;border-radius:8px;background:linear-gradient(180deg,#f8fafc,#fff);padding:12px;overflow:auto}
+      .traversal{margin-top:10px;color:#374151;font-size:14px}
+      .node-text{fill:#fff;font-weight:600;font-size:13px}
+      .legend{font-size:13px;color:#6b7280}
+      .small-btn{padding:6px 8px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;cursor:pointer}
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useRef } = React;
+
+      function createNode(val) { return { val, left: null, right: null, id: Math.random().toString(36).slice(2,9) }; }
+
+      // Level-order insert (left-to-right)
+      function insertLevel(root, val) {
+        const node = createNode(val);
+        if (!root) return node;
+        const q = [root];
+        while (q.length) {
+          const n = q.shift();
+          if (!n.left) { n.left = node; return root; }
+          else q.push(n.left);
+          if (!n.right) { n.right = node; return root; }
+          else q.push(n.right);
+        }
+        return root;
+      }
+
+      function findLastNodeAndParent(root) {
+        if (!root) return { last: null, parent: null };
+        const q = [{node: root, parent: null}];
+        let last = null;
+        while (q.length) {
+          const {node, parent} = q.shift();
+          last = { node, parent };
+          if (node.left) q.push({node: node.left, parent: node});
+          if (node.right) q.push({node: node.right, parent: node});
+        }
+        return last;
+      }
+
+      function deleteLevel(root, val) {
+        if (!root) return null;
+        let target = null;
+        const q = [root];
+        while (q.length) {
+          const n = q.shift();
+          if (n.val === val) { target = n; break; }
+          if (n.left) q.push(n.left);
+          if (n.right) q.push(n.right);
+        }
+        if (!target) return root;
+        const lastInfo = findLastNodeAndParent(root);
+        if (!lastInfo || !lastInfo.node) return root;
+        const last = lastInfo.node;
+        const parent = lastInfo.parent;
+        if (last === target && !parent) return null;
+        target.val = last.val;
+        if (parent) {
+          if (parent.right === last) parent.right = null;
+          else if (parent.left === last) parent.left = null;
+        }
+        return root;
+      }
+
+      function inorder(node, out=[]) { if (!node) return out; inorder(node.left,out); out.push(node.val); inorder(node.right,out); return out; }
+      function preorder(node, out=[]) { if (!node) return out; out.push(node.val); preorder(node.left,out); preorder(node.right,out); return out; }
+      function postorder(node, out=[]) { if (!node) return out; postorder(node.left,out); postorder(node.right,out); out.push(node.val); return out; }
+      function levelorder(root) { const out = []; if (!root) return out; const q = [root]; while (q.length) { const n = q.shift(); out.push(n.val); if (n.left) q.push(n.left); if (n.right) q.push(n.right); } return out; }
+
+      function computeLayout(root, hSpacing=90, vSpacing=90) {
+        const positions = new Map();
+        let x = 0;
+        function dfs(node, depth=0) {
+          if (!node) return;
+          dfs(node.left, depth+1);
+          positions.set(node.id, { x: x++ * hSpacing, y: depth * vSpacing });
+          dfs(node.right, depth+1);
+        }
+        dfs(root, 0);
+        return positions;
+      }
+
+      function BinaryTreeVisualizer() {
+        const [root, setRoot] = useState(null);
+        const [input, setInput] = useState('');
+        const [arrayInput, setArrayInput] = useState('');
+        const [clearBeforeBuild, setClearBeforeBuild] = useState(true);
+        const [message, setMessage] = useState('');
+        const [traversal, setTraversal] = useState('');
+        const svgRef = useRef(null);
+
+        function parseValue(v) { if (v === '') return null; const n = Number(v); return Number.isNaN(n) ? v : n; }
+
+        function handleInsert() {
+          const v = parseValue(input);
+          if (v === null) { setMessage('Enter a value'); return; }
+          setRoot(prev => { const copy = structuredClone(prev) || null; return insertLevel(copy, v); });
+          setMessage(`Inserted ${input}`);
+          setInput('');
+        }
+
+        function handleDelete() {
+          const v = parseValue(input);
+          if (v === null) { setMessage('Enter a value'); return; }
+          setRoot(prev => { const copy = structuredClone(prev) || null; return deleteLevel(copy, v); });
+          setMessage(`Deleted ${input} (if present)`);
+          setInput('');
+        }
+
+        function handleClear() { setRoot(null); setMessage('Tree cleared'); setTraversal(''); }
+
+        function handleTraverse(type) {
+          let out = [];
+          if (!root) { setTraversal(''); setMessage('Tree is empty'); return; }
+          if (type === 'in') out = inorder(root, []);
+          if (type === 'pre') out = preorder(root, []);
+          if (type === 'post') out = postorder(root, []);
+          if (type === 'level') out = levelorder(root);
+          setTraversal(out.join(', '));
+          setMessage(`${type}order: ${out.length} nodes`);
+        }
+
+        function handleBuildFromArray() {
+          if (!arrayInput) { setMessage('Enter array values'); return; }
+          const cleaned = arrayInput.replace(/^[\[\]]+|[\[\]]+$/g, '');
+          const tokens = cleaned.split(/[,\s]+/).filter(Boolean);
+          if (tokens.length === 0) { setMessage('No values parsed'); return; }
+          const values = tokens.map(t => parseValue(t));
+          setRoot(prev => {
+            let base = prev && !clearBeforeBuild ? structuredClone(prev) : null;
+            for (const v of values) base = insertLevel(base, v);
+            return base;
+          });
+          setMessage(`Built tree from array (${values.length} items)`);
+        }
+
+        const positions = computeLayout(root, 90, 90);
+        let maxX = 0, maxY = 0;
+        positions.forEach(p => { if (p.x > maxX) maxX = p.x; if (p.y > maxY) maxY = p.y; });
+        const padding = 40;
+        const svgWidth = Math.max(600, maxX + padding*2 + 120);
+        const svgHeight = Math.max(240, maxY + padding*2 + 120);
+
+        const nodes = [];
+        function collect(node) { if (!node) return; nodes.push(node); collect(node.left); collect(node.right); }
+        collect(root);
+
+        return (
+          <div className="container">
+            <h1>Binary Tree Visualizer (Left-to-Right)</h1>
+
+            <div className="controls">
+              <input value={input} onChange={e => setInput(e.target.value)} placeholder="Enter value (number or text)" />
+              <button onClick={handleInsert}>Insert</button>
+              <button className="alt" onClick={handleDelete}>Delete</button>
+              <button onClick={() => handleTraverse('in')}>Inorder</button>
+              <button onClick={() => handleTraverse('pre')}>Preorder</button>
+              <button onClick={() => handleTraverse('post')}>Postorder</button>
+              <button onClick={() => handleTraverse('level')}>Level</button>
+              <button className="alt" onClick={handleClear}>Clear</button>
+            </div>
+
+            <div className="controls" style={{marginTop:8}}>
+              <input value={arrayInput} onChange={e => setArrayInput(e.target.value)} placeholder="Array (e.g. 5,3,7,3 or [5 3 7 3])" style={{flex:1}} />
+              <button onClick={handleBuildFromArray}>Build from array</button>
+              <label style={{display:'flex',alignItems:'center',gap:6,marginLeft:8,fontSize:13,color:'#6b7280'}}>
+                <input type="checkbox" checked={clearBeforeBuild} onChange={e => setClearBeforeBuild(e.target.checked)} /> Clear first
+              </label>
+            </div>
+
+            <div className="canvas">
+              <svg ref={svgRef} width="100%" viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{background:'transparent'}}>
+                <g transform={`translate(${padding + 60}, ${padding})`}>
+                  {nodes.map(n => {
+                    if (!n) return null;
+                    const p = positions.get(n.id);
+                    if (!p) return null;
+                    const children = [];
+                    if (n.left && positions.get(n.left.id)) children.push(positions.get(n.left.id));
+                    if (n.right && positions.get(n.right.id)) children.push(positions.get(n.right.id));
+                    return children.map((c, i) => (
+                      <line key={n.id + '-edge-' + i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} stroke="#111" strokeWidth={2} strokeOpacity={0.35} />
+                    ));
+                  })}
+
+                  {nodes.map(n => {
+                    const p = positions.get(n.id);
+                    if (!p) return null;
+                    const depth = p.y / 90;
+                    const hue = (depth * 60) % 360;
+                    const r = 20;
+                    return (
+                      <g key={n.id} transform={`translate(${p.x}, ${p.y})`}>
+                        <circle r={r} cx={0} cy={0} fill={`hsl(${hue} 70% 45%)`} />
+                        <text x={0} y={5} textAnchor="middle" className="node-text">{String(n.val)}</text>
+                      </g>
+                    );
+                  })}
+                </g>
+              </svg>
+            </div>
+
+            <div className="traversal"><strong>Traversal:</strong> {traversal || '-'}</div>
+            <div className="legend" style={{marginTop:8}}><strong>Nodes:</strong> {nodes.length} — <span style={{marginLeft:8}}>{message}</span></div>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<BinaryTreeVisualizer />);
+    </script>
+  </body>
+</html>
