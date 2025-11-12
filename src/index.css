@@ -1,0 +1,72 @@
+*{
+    border:0;
+    margin:0;
+    padding:0;
+}
+
+h1{
+    color:aliceblue;
+}
+
+header{
+    background-color:rgb(2, 15, 23);
+    width:100%;
+    height:80px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+
+}
+/* Set page background to black so the aurora shows strongly */
+body{
+    background:linear-gradient(135deg,#0f172a,#1f2937);
+    color:#fff;
+    font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    min-height:100vh;
+}
+article{
+    position:relative;
+    width:100%;
+    height:auto;
+    padding:10px;
+   }
+
+
+.containers{
+    display:block;
+    position:relative;
+
+    /*height:100px;*/
+    /*width:auto;change to auto*/
+    /*margin:10px;*/
+}
+
+aside{
+    text-align:center;
+    height:30px;
+    /* changed to transparent so it doesn't show as a white bar over the black background */
+    background-color: transparent;
+    border:2px solid rgba(255,255,255,0.06); /* subtle border if needed */
+    margin:100px;
+    color: #fff;
+}
+
+.aurora-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* ensure the aurora wrapper has a black background (in case canvas is transparent) */
+.theme-gradient { background:linear-gradient(135deg,#0f172a,#1f2937); }
+
+/* App layout helpers for layered backgrounds */
+.app-aurora-wrapper{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: #000; /* helps the aurora pop if canvas has transparency */
+}
+.app-content{
+    position: relative;
+    z-index: 1;
+}
