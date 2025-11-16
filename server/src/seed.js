@@ -13,7 +13,7 @@ async function run() {
   if (!MONGODB_URI) {
     console.error(
       'MONGODB_URI is not set. Create server/.env with your connection string (local or Atlas).\n' +
-        'Example: MONGODB_URI=mongodb://localhost:27017/visualgo'
+        'Example: MONGODB_URI=mongodb://localhost:27017/structify'
     );
     process.exit(1);
   }

@@ -128,9 +128,31 @@ export default function QueueApp() {
         </div>
       </header>
 
-  <main className="mx-auto max-w-6xl px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
-        {/* Visualization (first for better mobile stacking) */}
-        <section className="rounded-2xl border border-white/10 p-5 sm:p-6 bg-white/5 flex flex-col">
+  <main className="mx-auto max-w-6xl px-4 py-8 grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+        {/* Controls (left like Array) */}
+        <div className="grid gap-3 p-4 rounded-xl bg-white/5 border border-white/10 h-fit">
+          <div className="grid grid-cols-3 gap-2">
+            <label className="col-span-1 text-sm text-gray-300">Size</label>
+            <input ref={sizeRef} type="number" min="0" max="16" defaultValue={6} className="col-span-2 px-2 py-1 rounded bg-white/10 border border-white/10" />
+            <label className="col-span-1 text-sm text-gray-300">Value</label>
+            <input ref={valRef} placeholder="e.g. 42" className="col-span-2 px-2 py-1 rounded bg-white/10 border border-white/10" />
+            <button onClick={createQueue} className="col-span-3 mt-1 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-semibold">Create (N)</button>
+            <div className="col-span-3 grid grid-cols-2 gap-2 mt-2">
+              <button onClick={enqueue} className="py-2 rounded-lg bg-cyan-500/90 hover:bg-cyan-400 text-black font-semibold">Enqueue</button>
+              <button onClick={dequeue} className="py-2 rounded-lg bg-rose-500/90 hover:bg-rose-400 text-black font-semibold">Dequeue</button>
+            </div>
+            <div className="col-span-3 grid grid-cols-2 gap-2">
+              <button onClick={peekFront} className="py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-black font-semibold">Peek Front</button>
+              <button onClick={peekRear} className="py-2 rounded-lg bg-amber-400/90 hover:bg-amber-300 text-black font-semibold">Peek Rear</button>
+            </div>
+            <div className="col-span-3 grid grid-cols-2 gap-2 mt-2">
+              <button onClick={reset} className="py-2 rounded-lg bg-white/10 hover:bg-white/20 col-span-2">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Visualization */}
+        <section className="rounded-2xl border border-white/10 p-6 bg-white/5 flex flex-col">
           <div className="mb-4 flex items-center justify-between">
             <div className="text-gray-300 text-sm">Size: <span className="text-white font-medium">{size}</span></div>
             <div className="text-gray-300 text-sm h-5 truncate">{message}</div>
@@ -147,57 +169,12 @@ export default function QueueApp() {
           </div>
         </section>
 
-        {/* Controls (right on desktop, centered vertically) */}
-  <aside className="flex flex-col mx-auto w-full lg:w-[360px] p-5 sm:p-6 lg:pt-14 rounded-xl bg-white/5 border border-white/10">
-          <div className="flex flex-col items-stretch gap-4">
-            <div className="flex flex-col gap-3">
-              <label className="text-xs text-slate-400">Create with N items</label>
-              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-2">
-                <input
-                  ref={sizeRef}
-                  type="number"
-                  min="0"
-                  max="16"
-                  defaultValue={6}
-                  className={`${inputBase} sm:flex-1`}
-                  aria-label="Initial queue size"
-                />
-                <button
-                  onClick={createQueue}
-                  className={`${btnBlock} sm:w-[112px] bg-emerald-600 hover:bg-emerald-500 shadow-sm`}
-                  aria-label="Create queue with N items"
-                >Create</button>
-                <button
-                  onClick={reset}
-                  className={`${btnBlock} sm:w-[96px] bg-white/10 hover:bg-white/20`}
-                  aria-label="Reset queue"
-                >Reset</button>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <label className="text-xs text-slate-400">Value</label>
-              <input
-                ref={valRef}
-                placeholder="e.g. 42"
-                className={inputBase}
-                aria-label="Value to enqueue"
-              />
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <button onClick={enqueue} className={`${btnBlock} bg-indigo-600 hover:bg-indigo-500 shadow-sm`} aria-label="Enqueue value">Enqueue</button>
-              <button onClick={dequeue} className={`${btnBlock} bg-rose-600 hover:bg-rose-500 shadow-sm`} aria-label="Dequeue front value">Dequeue</button>
-              <button onClick={peekFront} className={`${btnBlock} bg-sky-600 hover:bg-sky-500 shadow-sm`} aria-label="Peek front value">Peek Front</button>
-              <button onClick={peekRear} className={`${btnBlock} bg-amber-600 hover:bg-amber-500 shadow-sm`} aria-label="Peek rear value">Peek Rear</button>
-            </div>
-          </div>
-        </aside>
       </main>
 
       <footer className="mx-auto max-w-6xl px-4 py-8 text-center text-xs text-gray-400">
-        <div className="mt-1">
-          <a href="/menu.html" className="text-emerald-400 hover:underline">← Back to Menu</a>
+        <div>Queue UI — operations: Enqueue, Dequeue, Peek</div>
+        <div className="mt-3">
+          <a href="/menu.html" className="text-emerald-400 hover:underline">Back to Menu</a>
         </div>
       </footer>
       <CodeModal slug="queue" open={showCode} onClose={()=>setShowCode(false)} />

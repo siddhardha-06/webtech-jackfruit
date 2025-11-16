@@ -50,6 +50,25 @@ export default function StackApp(){
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8 grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+          {/* Controls (placed first like Array layout) */}
+          <div className="grid gap-3 p-4 rounded-xl bg-white/5 border border-white/10 h-fit">
+            <div className="grid grid-cols-3 gap-2">
+              <label className="col-span-1 text-sm text-gray-300">Value</label>
+              <input className="col-span-2 px-2 py-1 rounded bg-white/10 border border-white/10 text-sm" ref={inputRef} value={value} onChange={e=>setValue(e.target.value)} placeholder="e.g. 42" />
+              <label className="col-span-1 text-sm text-gray-300">Capacity</label>
+              <input className="col-span-2 px-2 py-1 rounded bg-white/10 border border-white/10 text-sm" type="number" min={1} max={100} value={capacity} onChange={e=>setCapacity(Math.max(1, Number(e.target.value||10)))} />
+              <div className="col-span-3 grid grid-cols-3 gap-2 mt-1">
+                <button onClick={push} className="py-2 rounded-lg bg-cyan-500/90 hover:bg-cyan-400 text-black font-semibold">Push</button>
+                <button onClick={pop} className="py-2 rounded-lg bg-rose-500/90 hover:bg-rose-400 text-black font-semibold">Pop</button>
+                <button onClick={peek} className="py-2 rounded-lg bg-amber-400/90 hover:bg-amber-300 text-black font-semibold">Peek</button>
+              </div>
+              <div className="col-span-3 grid grid-cols-2 gap-2">
+                <button onClick={printAll} className="py-2 rounded-lg bg-white/10 hover:bg-white/20">Print</button>
+                <button onClick={clear} className="py-2 rounded-lg bg-white/10 hover:bg-white/20">Reset</button>
+              </div>
+            </div>
+          </div>
+
           {/* Visualization */}
           <section className="rounded-2xl border border-white/10 p-6 bg-white/5">
             <div className="mb-4 flex items-center justify-between">
@@ -73,26 +92,13 @@ export default function StackApp(){
             </div>
           </section>
 
-          {/* Controls */}
-          <aside className="grid gap-3 p-4 rounded-xl bg-white/5 border border-white/100">
-            <div className="grid grid-cols-3 gap-2">
-              <label className="col-span-1 text-sm text-gray-300">Value</label>
-              <input className="col-span-2 px-2 py-1 rounded bg-white/10 border border-white/10" ref={inputRef} value={value} onChange={e=>setValue(e.target.value)} />
-              <label className="col-span-1 text-sm text-gray-300">Capacity</label>
-              <input className="col-span-2 px-2 py-1 rounded bg-white/10 border border-white/10" type="number" min={1} max={100} value={capacity} onChange={e=>setCapacity(Math.max(1, Number(e.target.value||10)))} />
-              <div className="col-span-3 grid grid-cols-3 gap-2">
-                <button onClick={push} className="py-2 rounded-lg bg-cyan-500/90 hover:bg-cyan-400 text-black font-semibold">Push</button>
-                <button onClick={pop} className="py-2 rounded-lg bg-rose-500/90 hover:bg-rose-400 text-black font-semibold">Pop</button>
-                <button onClick={peek} className="py-2 rounded-lg bg-amber-400/90 hover:bg-amber-300 text-black font-semibold">Peek</button>
-              </div>
-              <button onClick={printAll} className="col-span-3 mt-2 py-2 rounded-lg bg-white/10 hover:bg-white/20">Print</button>
-              <button onClick={clear} className="col-span-3 mt-1 py-2 rounded-lg bg-white/10 hover:bg-white/20">Reset</button>
-            </div>
-          </aside>
       </main>
 
       <footer className="mx-auto max-w-6xl px-4 py-8 text-center text-xs text-gray-400">
         <div>Stack UI — operations: Push, Pop, Peek</div>
+        <div className="mt-3">
+          <a href="/menu.html" className="text-emerald-400 hover:underline">Back to Menu</a>
+        </div>
       </footer>
       <CodeModal slug="stack" open={showCode} onClose={()=>setShowCode(false)} />
     </div>

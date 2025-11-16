@@ -1,4 +1,4 @@
-# VisuAlgo Clone (Frontend + Backend)
+# Structify Clone (Frontend + Backend)
 
 Interactive data structure visualizers (Array, Linked List, Queue, Stack, Binary Tree, BST) with animated backgrounds (Ballpit & Aurora) plus a backend serving code snippets (C language initially).
 
@@ -117,7 +117,7 @@ Will add a modal component that fetches `/api/ds/:slug` and displays code snippe
 
 ### License / Attribution
 
-Educational clone inspired by VisuAlgo style. Not affiliated with original site.
+Educational clone inspired by Structify style. Not affiliated with original site.
  
  ### Quick MongoDB via Docker (Optional)
  

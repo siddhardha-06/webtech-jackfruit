@@ -3,13 +3,13 @@ version: "3.8"
 services:
   mongo:
     image: mongo:7
-    container_name: visualgo-mongo
+    container_name: structify-mongo
     restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-    # No auth for local development; server connects to mongodb://localhost:27017/visualgo
+    # No auth for local development; server connects to mongodb://localhost:27017/structify
 
 volumes:
   mongo_data:

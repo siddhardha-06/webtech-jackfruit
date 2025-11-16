@@ -28,82 +28,76 @@ export default function BSTApp(){
   const pos=computeLayout(root,90,90); let maxX=0,maxY=0; pos.forEach(p=>{ if(p.x>maxX) maxX=p.x; if(p.y>maxY) maxY=p.y }); const padding=40; const svgWidth=Math.max(600,maxX+padding*2+120); const svgHeight=Math.max(240,maxY+padding*2+120);
   const nodes=[]; (function collect(n){ if(!n) return; nodes.push(n); collect(n.left); collect(n.right) })(root);
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b border-white/10 bg-white/5/20 backdrop-blur px-4 sm:px-8 py-4">
-        <div className="max-w-6xl mx-auto flex flex-col items-start gap-1">
-          <h1 className="text-xl sm:text-2xl font-semibold">Binary Search Tree Visualizer</h1>
+    <div className="min-h-screen bg-black text-white">
+      <header className="sticky top-0 z-10 backdrop-blur supports-[backdrop-filter]:bg-white/5 bg-white/0 border-b border-white/10">
+        <div className="mx-auto max-w-6xl px-4 py-4 flex flex-col items-start gap-1">
+          <h1 className="text-xl font-semibold">Binary Search Tree — Visualizer</h1>
           <TextType
-            text={["BST Insert • Delete • Traversals","Build from array values"]}
-            typingSpeed={70}
+            text={["Insert • Delete • Traversals","Build from array values"]}
+            typingSpeed={75}
             pauseDuration={1400}
-            className="text-sm text-slate-300"
+            showCursor={true}
+            className="text-sm text-gray-300"
             cursorCharacter="|"
           />
         </div>
       </header>
 
-      <main className="flex-1 px-4 sm:px-8 py-6">
-        <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-[1fr_360px]">
-          {/* Visualization */}
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6">
-            <div className="mb-3 text-slate-400 text-sm">Nodes: <span className="text-white font-medium">{nodes.length}</span></div>
-            <div className="border rounded-lg p-2 bg-black/40">
-              <svg width="100%" viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{background:'transparent'}}>
-                <g transform={`translate(${padding + 60}, ${padding})`}>
-                  {nodes.map(n=>{ if(!n) return null; const p=pos.get(n.id); if(!p) return null; const children=[]; if(n.left&&pos.get(n.left.id)) children.push(pos.get(n.left.id)); if(n.right&&pos.get(n.right.id)) children.push(pos.get(n.right.id)); return children.map((c,i)=>(<line key={n.id+'-edge-'+i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} stroke="#fff" strokeWidth={2} strokeOpacity={0.2} />)) })}
-                  {nodes.map(n=>{ const p=pos.get(n.id); if(!p) return null; const depth=p.y/90; const hue=(depth*60)%360; const r=20; return (<g key={n.id} transform={`translate(${p.x}, ${p.y})`}><circle r={r} cx={0} cy={0} fill={`hsl(${hue} 70% 45%)`} /><text x={0} y={5} textAnchor="middle" className="font-semibold text-white" fontSize={13}>{String(n.val)}</text></g>) })}
-                </g>
-              </svg>
+      <main className="mx-auto max-w-6xl px-4 py-8 grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+        {/* Controls (left) */}
+        <div className="grid gap-3 p-4 rounded-xl bg-white/5 border border-white/10 h-fit">
+          <div className="grid grid-cols-3 gap-2">
+            <label className="col-span-1 text-sm text-gray-300">Value</label>
+            <input value={input} onChange={e=>setInput(e.target.value)} placeholder="e.g. 42" className="col-span-2 px-2 py-1 rounded bg-white/10 border border-white/10 text-sm" />
+
+            <div className="col-span-3 grid grid-cols-2 gap-2">
+              <button onClick={handleInsert} className="py-2 rounded-lg bg-cyan-500/90 hover:bg-cyan-400 text-black font-semibold">Insert</button>
+              <button onClick={handleDelete} className="py-2 rounded-lg bg-rose-500/90 hover:bg-rose-400 text-black font-semibold">Delete</button>
             </div>
-            <div className="text-xs text-slate-300 mt-2"><strong>Traversal:</strong> {traversal || '-'} • <span>{message}</span></div>
-            <div className="mt-4">
-              <button onClick={()=>setShowCode(true)} className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm font-medium">View C Code</button>
+
+            <div className="col-span-3 grid grid-cols-2 gap-2 mt-2">
+              <button onClick={()=>handleTraverse('in')} className="py-2 rounded-lg bg-emerald-500/90 hover:bg-emerald-400 text-black font-semibold">Inorder</button>
+              <button onClick={()=>handleTraverse('pre')} className="py-2 rounded-lg bg-cyan-500/90 hover:bg-cyan-400 text-black font-semibold">Preorder</button>
+              <button onClick={()=>handleTraverse('post')} className="py-2 rounded-lg bg-amber-400/90 hover:bg-amber-300 text-black font-semibold">Postorder</button>
+              <button onClick={()=>handleTraverse('level')} className="py-2 rounded-lg bg-sky-500/90 hover:bg-sky-400 text-black font-semibold">Levelorder</button>
             </div>
-          </section>
 
-          {/* Controls */}
-          <aside className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="col-span-2">
-                <label className="text-xs text-slate-400">Value</label>
-                <div className="mt-1 flex gap-2">
-                  <input value={input} onChange={e=>setInput(e.target.value)} placeholder="e.g. 42" className="flex-1 bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500/60" />
-                  <button onClick={handleInsert} className="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm">Insert</button>
-                  <button onClick={handleDelete} className="px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-sm">Delete</button>
-                </div>
-              </div>
-
-              <button onClick={()=>handleTraverse('in')} className="col-span-2 px-3 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-sm">Inorder</button>
-              <button onClick={()=>handleTraverse('pre')} className="col-span-2 px-3 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-sm">Preorder</button>
-              <button onClick={()=>handleTraverse('post')} className="col-span-2 px-3 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-sm">Postorder</button>
-              <button onClick={()=>handleTraverse('level')} className="col-span-2 px-3 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-sm">Levelorder</button>
-
-              <div className="col-span-2 h-px bg-white/10 my-2" />
-
-              <div className="col-span-2">
-                <label className="text-xs text-slate-400">Build from array</label>
-                <div className="mt-1 flex gap-2">
-                  <input value={arrayInput} onChange={e=>setArrayInput(e.target.value)} placeholder="e.g. 5,3,7" className="flex-1 bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500/60" />
-                  <label className="flex items-center gap-2 text-xs text-slate-300 bg-black/40 px-2 rounded-md border border-white/10">
-                    <input type="checkbox" checked={clearBeforeBuild} onChange={e=>setClear(e.target.checked)} />
-                    Clear first
-                  </label>
-                  <button onClick={handleBuild} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm">Build</button>
-                </div>
-              </div>
-
-              <button onClick={()=>{ setRoot(null); setMessage('Tree cleared'); setTraversal('') }} className="col-span-2 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm">Clear</button>
+            <label className="col-span-1 text-sm text-gray-300 mt-2">Array</label>
+            <input value={arrayInput} onChange={e=>setArrayInput(e.target.value)} placeholder="e.g. 5,3,7" className="col-span-2 px-2 py-1 rounded bg-white/10 border border-white/10 text-sm" />
+            <div className="col-span-3 grid grid-cols-2 gap-2 mt-2">
+              <label className="flex items-center gap-2 text-xs text-slate-300 bg-black/40 px-2 rounded-md border border-white/10">
+                <input type="checkbox" checked={clearBeforeBuild} onChange={e=>setClear(e.target.checked)} />
+                Clear first
+              </label>
+              <button onClick={handleBuild} className="py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-semibold">Build</button>
             </div>
-          </aside>
+
+            <button onClick={()=>{ setRoot(null); setMessage('Tree cleared'); setTraversal('') }} className="col-span-3 mt-2 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10">Reset</button>
+          </div>
         </div>
+
+        {/* Visualization (right) */}
+        <section className="rounded-2xl border border-white/10 p-6 bg-white/5">
+          <div className="text-sm text-gray-300 mb-3">Nodes: <span className="text-white font-medium">{nodes.length}</span></div>
+          <div className="border rounded-lg p-2 bg-black/40">
+            <svg width="100%" viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{background:'transparent'}}>
+              <g transform={`translate(${padding + 60}, ${padding})`}>
+                {nodes.map(n=>{ if(!n) return null; const p=pos.get(n.id); if(!p) return null; const children=[]; if(n.left&&pos.get(n.left.id)) children.push(pos.get(n.left.id)); if(n.right&&pos.get(n.right.id)) children.push(pos.get(n.right.id)); return children.map((c,i)=>(<line key={n.id+'-edge-'+i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} stroke="#fff" strokeWidth={2} strokeOpacity={0.2} />)) })}
+                {nodes.map(n=>{ const p=pos.get(n.id); if(!p) return null; const depth=p.y/90; const hue=(depth*60)%360; const r=20; return (<g key={n.id} transform={`translate(${p.x}, ${p.y})`}><circle r={r} cx={0} cy={0} fill={`hsl(${hue} 70% 45%)`} /><text x={0} y={5} textAnchor="middle" className="font-semibold text-white" fontSize={13}>{String(n.val)}</text></g>) })}
+              </g>
+            </svg>
+          </div>
+          <div className="text-xs text-slate-300 mt-2"><strong>Traversal:</strong> {traversal || '-'} • <span>{message}</span></div>
+          <div className="mt-6">
+            <button onClick={()=>setShowCode(true)} className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm font-medium">View C Code</button>
+          </div>
+        </section>
       </main>
 
-      <footer className="px-4 sm:px-8 py-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="text-xs text-slate-500">Binary Search Tree · Visualizer</div>
-          <div className="mt-3">
-            <a href="/menu.html" className="text-sm text-emerald-400 hover:underline">Back to Menu</a>
-          </div>
+      <footer className="mx-auto max-w-6xl px-4 py-8 text-center text-xs text-gray-400">
+        <div>Binary Search Tree · Visualizer</div>
+        <div className="mt-3">
+          <a href="/menu.html" className="text-emerald-400 hover:underline">Back to Menu</a>
         </div>
       </footer>
       <CodeModal slug="bst" open={showCode} onClose={()=>setShowCode(false)} />

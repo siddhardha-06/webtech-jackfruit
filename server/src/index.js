@@ -38,7 +38,7 @@ app.get('/api/db-status', (_req, res) => {
   const state = mongoose.connection?.readyState ?? 0;
   const states = ['disconnected', 'connected', 'connecting', 'disconnecting', 'unauthorized', 'unknown'];
   res.json({
-    uri: (process.env.MONGODB_URI || 'mongodb://localhost:27017/visualgo').replace(/:\/\/([^:]+):[^@]+@/, '://$1:****@'),
+    uri: (process.env.MONGODB_URI || 'mongodb://localhost:27017/structify').replace(/:\/\/([^:]+):[^@]+@/, '://$1:****@'),
     state,
     stateText: states[state] || 'unknown',
     name: mongoose.connection?.name,
@@ -62,7 +62,7 @@ app.use((err, req, res, _next) => {
 
 const PORT = Number(process.env.PORT || 4000);
 // Attempt MongoDB connection on startup; continue serving even if it fails.
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/visualgo';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/structify';
 
 async function connectDB() {
   try {

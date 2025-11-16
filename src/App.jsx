@@ -160,7 +160,7 @@ function App() {
 						</button>
 					</div>
 					<aside className="text-center h-16 flex items-center justify-center bg-transparent border-t border-white/10 mt-10">
-						<a href="#" className="text-sm text-slate-300 hover:text-white">About us</a>
+						<a href="/about.html" className="text-sm text-slate-300 hover:text-white">About us</a>
 					</aside>
 				</article>
 			</div>
