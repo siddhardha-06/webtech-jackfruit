@@ -164,7 +164,7 @@ function App() {
 					</aside>
 				</article>
 			</div>
-			<footer className="py-6 text-center text-xs text-gray-300">© 2025 VisuAlgo Replica</footer>
+			<footer className="py-6 text-center text-xs text-gray-300">© 2025 Structify </footer>
 		</div>
 	);
 }

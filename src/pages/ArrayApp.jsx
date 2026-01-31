@@ -15,7 +15,7 @@ function Box({ value, index, highlighted, speedMs }) {
   )
 }
 
-function Controls({ onCreate, onInsert, onRemove, onUpdate, onReset, speedMs, setSpeedMs }) {
+function Controls({ onCreate, onInsert, onRemove, onUpdate, onSort, onReset, speedMs, setSpeedMs }) {
   const [createN, setCreateN] = useState(10)
   const [min, setMin] = useState(-9)
   const [max, setMax] = useState(99)
@@ -47,6 +47,8 @@ function Controls({ onCreate, onInsert, onRemove, onUpdate, onReset, speedMs, se
           <button onClick={()=>onUpdate(idx, val)} className="py-2 rounded-lg bg-amber-400/90 hover:bg-amber-300 text-black font-semibold">Update(i,v)</button>
         </div>
       </div>
+
+      <button onClick={onSort} className="w-full py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-black font-semibold">Sort (ASC)</button>
 
       <div className="grid grid-cols-3 items-center gap-2">
         <label className="text-sm text-gray-300">Speed</label>
@@ -105,6 +107,13 @@ export default function ArrayApp(){
     })
     withFlash(i, ()=>{})
   }
+  function onSort(){
+    setArr(prev => {
+      const sorted = [...prev].sort((a, b) => a - b)
+      return sorted
+    })
+    setHighlight(-1)
+  }
   function onReset(){
     setArr([ -3, 5, 19, 39, 57, 64, 68, 70 ])
     setHighlight(-1)
@@ -130,12 +139,12 @@ export default function ArrayApp(){
 
       <main className="mx-auto max-w-6xl px-4 py-8 grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
         <Controls 
-          onCreate={onCreate} onInsert={onInsert} onRemove={onRemove} onUpdate={onUpdate} onReset={onReset}
+          onCreate={onCreate} onInsert={onInsert} onRemove={onRemove} onUpdate={onUpdate} onSort={onSort} onReset={onReset}
           speedMs={speedMs} setSpeedMs={setSpeedMs}
         />
 
         <section className="rounded-2xl border border-white/10 p-6 bg-white/5">
-          <div className="text-sm text-gray-300 mb-3">Sorted Array</div>
+          <div className="text-sm text-gray-300 mb-3">Array</div>
           <div className="flex flex-wrap gap-2">
             {arr.map((v, i)=> (
               <div key={i} className="flex flex-col items-center">
