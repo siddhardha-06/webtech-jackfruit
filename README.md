@@ -1,4 +1,4 @@
-# Structify Clone (Frontend + Backend)
+# Structify (Frontend + Backend)
 
 Interactive data structure visualizers (Array, Linked List, Queue, Stack, Binary Tree, BST) with animated backgrounds (Ballpit & Aurora) plus a backend serving code snippets (C language initially).
 
